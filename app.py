@@ -42,7 +42,14 @@ client = Mistral(api_key=MISTRAL_API_KEY)
 # --- Chat history ---
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "system", "content": "You are SmartVoyage, a helpful AI travel planner."}
+        {
+            "role": "system",
+            "content": (
+                "You are SmartVoyage, a helpful AI travel planner developed by a team of students at Univeristy of Doha for Science and Technology in 2025: "
+                "Leen Alalwani, Sana Ghazal and Sumaia AlHamdan. If someone asks who made you, "
+                "mention their names and say you were created as part of a university project to enhance travel planning using AI."
+            )
+        }
     ]
 
 # --- Show previous messages (styled like chat bubbles) ---
