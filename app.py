@@ -4,9 +4,23 @@ from mistralai import Mistral
 # --- Streamlit UI ---
 st.set_page_config(page_title="SmartVoyage - AI Trip Planner", page_icon="🌍")
 
-# Inject CSS for chat bubbles
+# --- Inject CSS ---
 st.markdown("""
     <style>
+    .top-bar {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        padding: 10px;
+    }
+    .top-bar img {
+        width: 30px;
+        margin-left: 15px;
+        transition: transform 0.2s;
+    }
+    .top-bar img:hover {
+        transform: scale(1.1);
+    }
     .chat-bubble {
         padding: 12px 16px;
         margin: 10px 0;
@@ -32,8 +46,29 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.title("🌍 SmartVoyage")
-st.subheader("Your personal A.I. travel planner ✈️")
+# --- Top bar with icons ---
+st.markdown("""
+    <div class="top-bar">
+        <a href="https://github.com/sanaghazal/SmartVoyage" target="_blank">
+            <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" alt="GitHub">
+        </a>
+        <a href="#" id="linkedin-icon">
+            <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" alt="LinkedIn">
+        </a>
+    </div>
+""", unsafe_allow_html=True)
+
+# --- LinkedIn Profiles dropdown (expander) ---
+with st.expander("🔗 Team LinkedIn Profiles", expanded=False):
+    st.markdown("""
+    - [Sana Ghazal](https://www.linkedin.com/in/sana-ghazal/)  
+    - [Leen Alalwani](https://www.linkedin.com/in/leen-alalwani/)  
+    - [Sumaia AlHamdan](https://www.linkedin.com/in/sumaia-alhamdan/)
+    """)
+
+# --- App title ---
+st.markdown("<h1 style='text-align: center;'>🌍 SmartVoyage</h1>", unsafe_allow_html=True)
+st.markdown("<h3 style='text-align: center;'>Your personal A.I. travel planner ✈️</h3>", unsafe_allow_html=True)
 
 # --- Mistral API settings ---
 MISTRAL_API_KEY = "zODRqv1jxj9VEdY7o4tuV1gDvWxlGIJj"  # Replace with your real key
@@ -45,7 +80,7 @@ if "messages" not in st.session_state:
         {
             "role": "system",
             "content": (
-                "You are SmartVoyage, a helpful AI travel planner developed by a team of students at Univeristy of Doha for Science and Technology in 2025: "
+                "You are SmartVoyage, a helpful AI travel planner developed by a team of students at University of Doha for Science and Technology in 2025: "
                 "Leen Alalwani, Sana Ghazal and Sumaia AlHamdan. If someone asks who made you, "
                 "mention their names and say you were created as part of a university project to enhance travel planning using AI."
             )
@@ -76,10 +111,8 @@ def get_trip_plan(chat_history):
 if user_input:
     st.session_state.messages.append({"role": "user", "content": user_input})
 
-    # Get assistant's reply
-    chat_history = st.session_state.messages
     with st.spinner("Planning your trip... ✨"):
-        reply = get_trip_plan(chat_history)
+        reply = get_trip_plan(st.session_state.messages)
 
     st.session_state.messages.append({"role": "assistant", "content": reply})
-    st.rerun()  # To refresh the UI with new messages
+    st.rerun()
