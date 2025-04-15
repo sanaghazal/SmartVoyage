@@ -43,10 +43,6 @@ st.markdown("""
         margin-right: auto;
         text-align: left;
     }
-    /* New column styling */
-    .st-emotion-cache-1cypcdb {
-        padding-right: 2rem;
-    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -66,75 +62,55 @@ st.markdown("""
 with st.expander("🔗 Team LinkedIn Profiles", expanded=False):
     st.markdown("""
     - [Sana Ghazal](https://www.linkedin.com/in/sana-ghazal/)  
-    - [Leen Alalwani](https://www.linkedin.com/in/leen-alalwani/)  
-    - [Sumaia AlHamdan](https://www.linkedin.com/in/sumaia-alhamdan/)
+    - [Leen Alalwani](https://www.linkedin.com/in/leen-alalwani-a643472a6/)  
+    - [Sumaia AlHamdan](https://www.linkedin.com/in/sumayya-alhamdan-7a8534276/)
     """)
 
-# --- Create two columns ---
-col1, col2 = st.columns(2)
+# --- App title ---
+st.markdown("<h1 style='text-align: center;'>🌍 SmartVoyage</h1>", unsafe_allow_html=True)
+st.markdown("<h3 style='text-align: center;'>Your personal A.I. travel planner ✈️</h3>", unsafe_allow_html=True)
 
-# --- Left Column: Title and Description ---
-with col1:
-    st.markdown("<h1 style='text-align: center; margin-bottom: 30px;'>🌍 SmartVoyage</h1>", unsafe_allow_html=True)
-    st.markdown("<h3 style='text-align: center; margin-bottom: 40px;'>Your personal A.I. travel planner ✈️</h3>", unsafe_allow_html=True)
-    st.markdown("""
-    <div style='padding: 20px; background-color: #f8f9fa; border-radius: 15px;'>
-        <h4>🌟 How it works:</h4>
-        <ol>
-            <li>Share your travel preferences</li>
-            <li>Tell us about your interests</li>
-            <li>Mention any special requirements</li>
-        </ol>
-        <p>Our AI will create a personalized itinerary including:<br>
-        🏨 Accommodations | 🗺️ Routes | 🍴 Dining | 🎉 Activities</p>
-        <p>Start by typing your travel plans in the chat!</p>
-    </div>
-    """, unsafe_allow_html=True)
+# --- Mistral API settings ---
+MISTRAL_API_KEY = "zODRqv1jxj9VEdY7o4tuV1gDvWxlGIJj"  # Replace with your real key
+client = Mistral(api_key=MISTRAL_API_KEY)
 
-# --- Right Column: Chat Interface ---
-with col2:
-    # --- Mistral API settings ---
-    MISTRAL_API_KEY = "zODRqv1jxj9VEdY7o4tuV1gDvWxlGIJj"  # Replace with your real key
-    client = Mistral(api_key=MISTRAL_API_KEY)
+# --- Chat history ---
+if "messages" not in st.session_state:
+    st.session_state.messages = [
+        {
+            "role": "system",
+            "content": (
+                "You are SmartVoyage, a helpful AI travel planner"
+            )
+        }
+    ]
 
-    # --- Chat history ---
-    if "messages" not in st.session_state:
-        st.session_state.messages = [
-            {
-                "role": "system",
-                "content": (
-                    "You are SmartVoyage, a helpful AI travel planner."
-                    "If someone asks who made you, answer by saying that you were developed by a team of students at University of Doha for Science and Technology in 2025. Mention the names of the students Leen Alalwani, Sana Ghazal, and Sumaia AlHamdan. Say you were created as part of a university project to enhance travel planning using AI."
-                )
-            }
-        ]
+# --- Show previous messages (styled like chat bubbles) ---
+for msg in st.session_state.messages[1:]:
+    role = msg["role"]
+    content = msg["content"]
+    if role == "user":
+        st.markdown(f'<div class="chat-bubble user">{content}</div>', unsafe_allow_html=True)
+    elif role == "assistant":
+        st.markdown(f'<div class="chat-bubble assistant">{content}</div>', unsafe_allow_html=True)
 
-    # --- Show previous messages (styled like chat bubbles) ---
-    for msg in st.session_state.messages[1:]:
-        role = msg["role"]
-        content = msg["content"]
-        if role == "user":
-            st.markdown(f'<div class="chat-bubble user">{content}</div>', unsafe_allow_html=True)
-        elif role == "assistant":
-            st.markdown(f'<div class="chat-bubble assistant">{content}</div>', unsafe_allow_html=True)
+# --- Chat input ---
+user_input = st.chat_input("Tell me where you'd like to go and any preferences...")
 
-    # --- Chat input ---
-    user_input = st.chat_input("Tell me where you'd like to go and any preferences...")
+# --- Get response from Mistral ---
+def get_trip_plan(chat_history):
+    response = client.chat.complete(
+        model="mistral-tiny",
+        messages=chat_history
+    )
+    return response.choices[0].message.content
 
-    # --- Get response from Mistral ---
-    def get_trip_plan(chat_history):
-        response = client.chat.complete(
-            model="mistral-tiny",
-            messages=chat_history
-        )
-        return response.choices[0].message.content
+# --- Handle user input ---
+if user_input:
+    st.session_state.messages.append({"role": "user", "content": user_input})
 
-    # --- Handle user input ---
-    if user_input:
-        st.session_state.messages.append({"role": "user", "content": user_input})
+    with st.spinner("Planning your trip... ✨"):
+        reply = get_trip_plan(st.session_state.messages)
 
-        with st.spinner("Planning your trip... ✨"):
-            reply = get_trip_plan(st.session_state.messages)
-
-        st.session_state.messages.append({"role": "assistant", "content": reply})
-        st.rerun()
+    st.session_state.messages.append({"role": "assistant", "content": reply})
+    st.rerun()
