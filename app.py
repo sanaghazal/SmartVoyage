@@ -43,20 +43,9 @@ st.markdown("""
         margin-right: auto;
         text-align: left;
     }
-    .container {
-        display: flex;
-        justify-content: space-between;
-    }
-    .left-column {
-        width: 50%;
-        padding: 20px;
-    }
-    .right-column {
-        width: 50%;
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
+    /* New column styling */
+    .st-emotion-cache-1cypcdb {
+        padding-right: 2rem;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -73,20 +62,41 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# --- Create two columns for layout ---
-col1, col2 = st.columns([1, 1])  # Equal width columns
+# --- LinkedIn Profiles dropdown (expander) ---
+with st.expander("🔗 Team LinkedIn Profiles", expanded=False):
+    st.markdown("""
+    - [Sana Ghazal](https://www.linkedin.com/in/sana-ghazal/)  
+    - [Leen Alalwani](https://www.linkedin.com/in/leen-alalwani/)  
+    - [Sumaia AlHamdan](https://www.linkedin.com/in/sumaia-alhamdan/)
+    """)
 
-# Left column (for title and description)
+# --- Create two columns ---
+col1, col2 = st.columns(2)
+
+# --- Left Column: Title and Description ---
 with col1:
-    st.markdown("<h1 style='text-align: left;'>🌍 SmartVoyage</h1>", unsafe_allow_html=True)
-    st.markdown("<h3 style='text-align: left;'>Your personal A.I. travel planner ✈️</h3>", unsafe_allow_html=True)
-    st.markdown(
-        "<p style='text-align: left;'>SmartVoyage is an AI-powered trip planning assistant that helps you discover amazing destinations based on your preferences. Whether you're looking for a relaxing beach vacation or an adventurous hiking trip, SmartVoyage will suggest the best places for you!</p>",
-        unsafe_allow_html=True,
-    )
+    st.markdown("<h1 style='text-align: center; margin-bottom: 30px;'>🌍 SmartVoyage</h1>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: center; margin-bottom: 40px;'>Your personal A.I. travel planner ✈️</h3>", unsafe_allow_html=True)
+    st.markdown("""
+    <div style='padding: 20px; background-color: #f8f9fa; border-radius: 15px;'>
+        <h4>🌟 How it works:</h4>
+        <ol>
+            <li>Share your travel preferences</li>
+            <li>Tell us about your interests</li>
+            <li>Mention any special requirements</li>
+        </ol>
+        <p>Our AI will create a personalized itinerary including:<br>
+        🏨 Accommodations | 🗺️ Routes | 🍴 Dining | 🎉 Activities</p>
+        <p>Start by typing your travel plans in the chat!</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-# Right column (for chatbot)
+# --- Right Column: Chat Interface ---
 with col2:
+    # --- Mistral API settings ---
+    MISTRAL_API_KEY = "zODRqv1jxj9VEdY7o4tuV1gDvWxlGIJj"  # Replace with your real key
+    client = Mistral(api_key=MISTRAL_API_KEY)
+
     # --- Chat history ---
     if "messages" not in st.session_state:
         st.session_state.messages = [
@@ -94,7 +104,7 @@ with col2:
                 "role": "system",
                 "content": (
                     "You are SmartVoyage, a helpful AI travel planner."
-                    "If someone asks who made you, answer by saying that you were developed by a team of students at University of Doha for Science and Technology in 2025. mention the names of the students Leen Alalwani, Sana Ghazal, and Sumaia AlHamdan. and say you were created as part of a university project to enhance travel planning using AI."
+                    "If someone asks who made you, answer by saying that you were developed by a team of students at University of Doha for Science and Technology in 2025. Mention the names of the students Leen Alalwani, Sana Ghazal, and Sumaia AlHamdan. Say you were created as part of a university project to enhance travel planning using AI."
                 )
             }
         ]
@@ -108,7 +118,7 @@ with col2:
         elif role == "assistant":
             st.markdown(f'<div class="chat-bubble assistant">{content}</div>', unsafe_allow_html=True)
 
-    # --- Chat input (only taking up half of the right column) ---
+    # --- Chat input ---
     user_input = st.chat_input("Tell me where you'd like to go and any preferences...")
 
     # --- Get response from Mistral ---
