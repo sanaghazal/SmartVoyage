@@ -71,7 +71,7 @@ st.markdown("<h1 style='text-align: center;'>🌍 SmartVoyage</h1>", unsafe_allo
 st.markdown("<h3 style='text-align: center;'>Your personal A.I. travel planner ✈️</h3>", unsafe_allow_html=True)
 
 # --- Mistral API settings ---
-#MISTRAL_API_KEY = "**********************"  # Replace with your real key
+MISTRAL_API_KEY = "oUWwQmaYyuVA6WIZU3y0KPgoSa3D0zj1"  # Replace with your real key
 client = Mistral(api_key=MISTRAL_API_KEY)
 
 # --- Chat history ---
